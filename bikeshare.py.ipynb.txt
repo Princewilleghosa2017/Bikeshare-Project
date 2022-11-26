@@ -1,0 +1,802 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "acc5632b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "d020096d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import time\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "2a428393",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   Unnamed: 0        Start Time          End Time  Trip Duration  \\\n",
+      "0     1423854  23-06-2017 15:09  23-06-2017 15:14            321   \n",
+      "1      955915  25-05-2017 18:19  25-05-2017 18:45           1610   \n",
+      "\n",
+      "          Start Station                   End Station   User Type  Gender  \\\n",
+      "0  Wood St & Hubbard St       Damen Ave & Chicago Ave  Subscriber    Male   \n",
+      "1   Theater on the Lake  Sheffield Ave & Waveland Ave  Subscriber  Female   \n",
+      "\n",
+      "   Birth Year  \n",
+      "0      1992.0  \n",
+      "1      1992.0  \n"
+     ]
+    }
+   ],
+   "source": [
+    "df=pd.read_csv(\"chicago.csv\")\n",
+    "print(df.head(2))\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "f45e8223",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df['Start Time']=pd.to_datetime(df['Start Time'])\n",
+    "df['month']=df['Start Time'].dt.month\n",
+    "\n",
+    "df['day of week']=df['Start Time'].dt.weekday\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "41109b32",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   Unnamed: 0          Start Time          End Time  Trip Duration  \\\n",
+      "0     1423854 2017-06-23 15:09:00  23-06-2017 15:14            321   \n",
+      "1      955915 2017-05-25 18:19:00  25-05-2017 18:45           1610   \n",
+      "2        9031 2017-04-01 08:27:00  04-01-2017 08:34            416   \n",
+      "3      304487 2017-06-03 13:49:00  06-03-2017 13:55            350   \n",
+      "4       45207 2017-01-17 14:53:00  17-01-2017 15:02            534   \n",
+      "5     1473887 2017-06-26 09:01:00  26-06-2017 09:11            586   \n",
+      "\n",
+      "                   Start Station                   End Station   User Type  \\\n",
+      "0           Wood St & Hubbard St       Damen Ave & Chicago Ave  Subscriber   \n",
+      "1            Theater on the Lake  Sheffield Ave & Waveland Ave  Subscriber   \n",
+      "2             May St & Taylor St           Wood St & Taylor St  Subscriber   \n",
+      "3  Christiana Ave & Lawrence Ave  St. Louis Ave & Balmoral Ave  Subscriber   \n",
+      "4         Clark St & Randolph St  Desplaines St & Jackson Blvd  Subscriber   \n",
+      "5   Clinton St & Washington Blvd          Canal St & Taylor St  Subscriber   \n",
+      "\n",
+      "   Gender  Birth Year  month  day of week  \n",
+      "0    Male      1992.0      6            4  \n",
+      "1  Female      1992.0      5            3  \n",
+      "2    Male      1981.0      4            5  \n",
+      "3    Male      1986.0      6            5  \n",
+      "4    Male      1975.0      1            1  \n",
+      "5    Male      1990.0      6            0  \n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df.head(6))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "71e78d1d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   Unnamed: 0          Start Time          End Time  Trip Duration  \\\n",
+      "0     1423854 2017-06-23 15:09:00  23-06-2017 15:14            321   \n",
+      "3      304487 2017-06-03 13:49:00  06-03-2017 13:55            350   \n",
+      "\n",
+      "                   Start Station                   End Station   User Type  \\\n",
+      "0           Wood St & Hubbard St       Damen Ave & Chicago Ave  Subscriber   \n",
+      "3  Christiana Ave & Lawrence Ave  St. Louis Ave & Balmoral Ave  Subscriber   \n",
+      "\n",
+      "  Gender  Birth Year  month  day of week  \n",
+      "0   Male      1992.0      6            4  \n",
+      "3   Male      1986.0      6            5  \n"
+     ]
+    }
+   ],
+   "source": [
+    "df=df[df['month']==6]\n",
+    "print(df.head(2))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "87a10daf",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "    Unnamed: 0          Start Time          End Time  Trip Duration  \\\n",
+      "0      1423854 2017-06-23 15:09:00  23-06-2017 15:14            321   \n",
+      "9       135470 2017-06-02 18:00:00  06-02-2017 18:09            493   \n",
+      "21     1420915 2017-06-23 12:21:00  23-06-2017 12:32            713   \n",
+      "31     1539334 2017-06-30 10:56:00  30-06-2017 11:40           2610   \n",
+      "40     1314009 2017-06-16 19:34:00  16-06-2017 20:16           2499   \n",
+      "61     1539175 2017-06-30 10:44:00  30-06-2017 11:11           1599   \n",
+      "\n",
+      "                   Start Station                   End Station   User Type  \\\n",
+      "0           Wood St & Hubbard St       Damen Ave & Chicago Ave  Subscriber   \n",
+      "9   Stetson Ave & South Water St  Clinton St & Washington Blvd  Subscriber   \n",
+      "21            Rush St & Cedar St        Halsted St & Willow St  Subscriber   \n",
+      "31               McCormick Place             Adler Planetarium    Customer   \n",
+      "40       State St & Van Buren St          McClurg Ct & Erie St    Customer   \n",
+      "61               Millennium Park       Streeter Dr & Grand Ave    Customer   \n",
+      "\n",
+      "   Gender  Birth Year  month  day of week  \n",
+      "0    Male      1992.0      6            4  \n",
+      "9    Male      1979.0      6            4  \n",
+      "21   Male      1985.0      6            4  \n",
+      "31    NaN         NaN      6            4  \n",
+      "40    NaN         NaN      6            4  \n",
+      "61    NaN         NaN      6            4  \n"
+     ]
+    }
+   ],
+   "source": [
+    "df=df[df['day of week']==4]\n",
+    "print(df.head(6))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "f6c03311",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "17\n",
+      "1710\n"
+     ]
+    }
+   ],
+   "source": [
+    "df['hour']=df['Start Time'].dt.hour\n",
+    "print(df['hour'].mode()[0])\n",
+    "df['End Time']=pd.to_datetime(df['End Time'])\n",
+    "df['end hour']=df['End Time'].dt.hour\n",
+    "df['total']=df['end hour']-df['hour']\n",
+    "print(df['total'].sum())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "7133b6e7",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "10423489\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df['Trip Duration'].sum())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "9f99b5ee",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Streeter Dr & Grand Ave\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df['Start Station'].mode()[0]) "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "1a645671",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "count of user:  10821\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"count of user: \", df['User Type'].count())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "19fcd540",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0    Streeter Dr & Grand Ave,Streeter Dr & Grand Ave\n",
+       "dtype: object"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "(df['Start Station']+','+df['End Station']).mode()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "eb7a0530",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "        Unnamed: 0          Start Time            End Time  Trip Duration  \\\n",
+      "141589     1423013 2017-06-23 14:23:00 2017-06-23 14:40:00           1059   \n",
+      "16381      1430126 2017-06-23 18:48:00 2017-06-23 19:03:00            899   \n",
+      "59539      1538466 2017-06-30 09:29:00 2017-06-30 09:37:00            474   \n",
+      "61699      1542044 2017-06-30 13:59:00 2017-06-30 14:22:00           1374   \n",
+      "243273     1421911 2017-06-23 13:20:00 2017-06-23 13:23:00            187   \n",
+      "...            ...                 ...                 ...            ...   \n",
+      "299188     1543579 2017-06-30 15:20:00 2017-06-30 15:24:00            261   \n",
+      "299552     1547257 2017-06-30 17:40:00 2017-06-30 18:00:00           1196   \n",
+      "299600     1539773 2017-06-30 11:37:00 2017-06-30 11:50:00            799   \n",
+      "299700     1307312 2017-06-16 14:51:00 2017-06-16 15:16:00           1488   \n",
+      "299947     1315604 2017-06-16 22:02:00 2017-06-16 22:17:00            862   \n",
+      "\n",
+      "                       Start Station                           End Station  \\\n",
+      "141589   Western Ave & Congress Pkwy              California Ave & Lake St   \n",
+      "16381         Jeffery Blvd & 71st St                    Shore Dr & 55th St   \n",
+      "59539   Stetson Ave & South Water St   Orleans St & Merchandise Mart Plaza   \n",
+      "61699    Michigan Ave & Jackson Blvd               Streeter Dr & Grand Ave   \n",
+      "243273        Woodlawn Ave & 55th St              University Ave & 57th St   \n",
+      "...                              ...                                   ...   \n",
+      "299188     Sheffield Ave & Willow St             Sheffield Ave & Willow St   \n",
+      "299552    Lake Shore Dr & North Blvd                        Dusable Harbor   \n",
+      "299600                Burnham Harbor                        Burnham Harbor   \n",
+      "299700           Theater on the Lake                    Rush St & Cedar St   \n",
+      "299947       Franklin St & Monroe St  Orleans St & Chestnut St (NEXT Apts)   \n",
+      "\n",
+      "         User Type  Gender  Birth Year  month  day of week  hour  end hour  \\\n",
+      "141589  Subscriber  Female      2001.0      6            4    14        14   \n",
+      "16381   Subscriber  Female      2000.0      6            4    18        19   \n",
+      "59539   Subscriber    Male      2000.0      6            4     9         9   \n",
+      "61699   Subscriber  Female      2000.0      6            4    13        14   \n",
+      "243273  Subscriber    Male      1999.0      6            4    13        13   \n",
+      "...            ...     ...         ...    ...          ...   ...       ...   \n",
+      "299188    Customer     NaN         NaN      6            4    15        15   \n",
+      "299552    Customer     NaN         NaN      6            4    17        18   \n",
+      "299600    Customer     NaN         NaN      6            4    11        11   \n",
+      "299700    Customer     NaN         NaN      6            4    14        15   \n",
+      "299947    Customer     NaN         NaN      6            4    22        22   \n",
+      "\n",
+      "        total  \n",
+      "141589      0  \n",
+      "16381       1  \n",
+      "59539       0  \n",
+      "61699       1  \n",
+      "243273      0  \n",
+      "...       ...  \n",
+      "299188      0  \n",
+      "299552      1  \n",
+      "299600      0  \n",
+      "299700      1  \n",
+      "299947      0  \n",
+      "\n",
+      "[10821 rows x 14 columns]\n"
+     ]
+    }
+   ],
+   "source": [
+    "df=df.sort_values('Birth Year',ascending=False)\n",
+    "print(df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "a36e84bf",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2001.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df['Birth Year'].iloc[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "76b75641",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "nan\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.sort_values('Birth Year',ascending=True)\n",
+    "\n",
+    "print(df['Birth Year'].iloc[len(df.index)-1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "0bdfc4f2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Unnamed: 0</th>\n",
+       "      <th>Start Time</th>\n",
+       "      <th>End Time</th>\n",
+       "      <th>Trip Duration</th>\n",
+       "      <th>Start Station</th>\n",
+       "      <th>End Station</th>\n",
+       "      <th>User Type</th>\n",
+       "      <th>Gender</th>\n",
+       "      <th>Birth Year</th>\n",
+       "      <th>month</th>\n",
+       "      <th>day of week</th>\n",
+       "      <th>hour</th>\n",
+       "      <th>end hour</th>\n",
+       "      <th>total</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>44854</th>\n",
+       "      <td>136275</td>\n",
+       "      <td>2017-06-02 20:19:00</td>\n",
+       "      <td>2017-06-02 20:23:00</td>\n",
+       "      <td>253</td>\n",
+       "      <td>University Ave &amp; 57th St</td>\n",
+       "      <td>Lake Park Ave &amp; 56th St</td>\n",
+       "      <td>Subscriber</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>1899.0</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>20</td>\n",
+       "      <td>20</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>267444</th>\n",
+       "      <td>1420663</td>\n",
+       "      <td>2017-06-23 12:05:00</td>\n",
+       "      <td>2017-06-23 12:12:00</td>\n",
+       "      <td>452</td>\n",
+       "      <td>Southport Ave &amp; Wellington Ave</td>\n",
+       "      <td>Damen Ave &amp; Melrose Ave</td>\n",
+       "      <td>Subscriber</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>1901.0</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>12</td>\n",
+       "      <td>12</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>184366</th>\n",
+       "      <td>131743</td>\n",
+       "      <td>2017-06-02 08:31:00</td>\n",
+       "      <td>2017-06-02 08:35:00</td>\n",
+       "      <td>212</td>\n",
+       "      <td>Milwaukee Ave &amp; Grand Ave</td>\n",
+       "      <td>Orleans St &amp; Ohio St</td>\n",
+       "      <td>Subscriber</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>1916.0</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>8</td>\n",
+       "      <td>8</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>261289</th>\n",
+       "      <td>1542100</td>\n",
+       "      <td>2017-06-30 14:02:00</td>\n",
+       "      <td>2017-06-30 14:18:00</td>\n",
+       "      <td>938</td>\n",
+       "      <td>Marine Dr &amp; Ainslie St</td>\n",
+       "      <td>Hampden Ct &amp; Diversey Pkwy</td>\n",
+       "      <td>Subscriber</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>1918.0</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>14</td>\n",
+       "      <td>14</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>167741</th>\n",
+       "      <td>1308668</td>\n",
+       "      <td>2017-06-16 16:05:00</td>\n",
+       "      <td>2017-06-16 16:17:00</td>\n",
+       "      <td>755</td>\n",
+       "      <td>Michigan Ave &amp; Washington St</td>\n",
+       "      <td>Clinton St &amp; Washington Blvd</td>\n",
+       "      <td>Subscriber</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>1934.0</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>16</td>\n",
+       "      <td>16</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>299188</th>\n",
+       "      <td>1543579</td>\n",
+       "      <td>2017-06-30 15:20:00</td>\n",
+       "      <td>2017-06-30 15:24:00</td>\n",
+       "      <td>261</td>\n",
+       "      <td>Sheffield Ave &amp; Willow St</td>\n",
+       "      <td>Sheffield Ave &amp; Willow St</td>\n",
+       "      <td>Customer</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>15</td>\n",
+       "      <td>15</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>299552</th>\n",
+       "      <td>1547257</td>\n",
+       "      <td>2017-06-30 17:40:00</td>\n",
+       "      <td>2017-06-30 18:00:00</td>\n",
+       "      <td>1196</td>\n",
+       "      <td>Lake Shore Dr &amp; North Blvd</td>\n",
+       "      <td>Dusable Harbor</td>\n",
+       "      <td>Customer</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>17</td>\n",
+       "      <td>18</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>299600</th>\n",
+       "      <td>1539773</td>\n",
+       "      <td>2017-06-30 11:37:00</td>\n",
+       "      <td>2017-06-30 11:50:00</td>\n",
+       "      <td>799</td>\n",
+       "      <td>Burnham Harbor</td>\n",
+       "      <td>Burnham Harbor</td>\n",
+       "      <td>Customer</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>11</td>\n",
+       "      <td>11</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>299700</th>\n",
+       "      <td>1307312</td>\n",
+       "      <td>2017-06-16 14:51:00</td>\n",
+       "      <td>2017-06-16 15:16:00</td>\n",
+       "      <td>1488</td>\n",
+       "      <td>Theater on the Lake</td>\n",
+       "      <td>Rush St &amp; Cedar St</td>\n",
+       "      <td>Customer</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>14</td>\n",
+       "      <td>15</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>299947</th>\n",
+       "      <td>1315604</td>\n",
+       "      <td>2017-06-16 22:02:00</td>\n",
+       "      <td>2017-06-16 22:17:00</td>\n",
+       "      <td>862</td>\n",
+       "      <td>Franklin St &amp; Monroe St</td>\n",
+       "      <td>Orleans St &amp; Chestnut St (NEXT Apts)</td>\n",
+       "      <td>Customer</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>6</td>\n",
+       "      <td>4</td>\n",
+       "      <td>22</td>\n",
+       "      <td>22</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>10821 rows × 14 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "        Unnamed: 0          Start Time            End Time  Trip Duration  \\\n",
+       "44854       136275 2017-06-02 20:19:00 2017-06-02 20:23:00            253   \n",
+       "267444     1420663 2017-06-23 12:05:00 2017-06-23 12:12:00            452   \n",
+       "184366      131743 2017-06-02 08:31:00 2017-06-02 08:35:00            212   \n",
+       "261289     1542100 2017-06-30 14:02:00 2017-06-30 14:18:00            938   \n",
+       "167741     1308668 2017-06-16 16:05:00 2017-06-16 16:17:00            755   \n",
+       "...            ...                 ...                 ...            ...   \n",
+       "299188     1543579 2017-06-30 15:20:00 2017-06-30 15:24:00            261   \n",
+       "299552     1547257 2017-06-30 17:40:00 2017-06-30 18:00:00           1196   \n",
+       "299600     1539773 2017-06-30 11:37:00 2017-06-30 11:50:00            799   \n",
+       "299700     1307312 2017-06-16 14:51:00 2017-06-16 15:16:00           1488   \n",
+       "299947     1315604 2017-06-16 22:02:00 2017-06-16 22:17:00            862   \n",
+       "\n",
+       "                         Start Station                           End Station  \\\n",
+       "44854         University Ave & 57th St               Lake Park Ave & 56th St   \n",
+       "267444  Southport Ave & Wellington Ave               Damen Ave & Melrose Ave   \n",
+       "184366       Milwaukee Ave & Grand Ave                  Orleans St & Ohio St   \n",
+       "261289          Marine Dr & Ainslie St            Hampden Ct & Diversey Pkwy   \n",
+       "167741    Michigan Ave & Washington St          Clinton St & Washington Blvd   \n",
+       "...                                ...                                   ...   \n",
+       "299188       Sheffield Ave & Willow St             Sheffield Ave & Willow St   \n",
+       "299552      Lake Shore Dr & North Blvd                        Dusable Harbor   \n",
+       "299600                  Burnham Harbor                        Burnham Harbor   \n",
+       "299700             Theater on the Lake                    Rush St & Cedar St   \n",
+       "299947         Franklin St & Monroe St  Orleans St & Chestnut St (NEXT Apts)   \n",
+       "\n",
+       "         User Type Gender  Birth Year  month  day of week  hour  end hour  \\\n",
+       "44854   Subscriber   Male      1899.0      6            4    20        20   \n",
+       "267444  Subscriber   Male      1901.0      6            4    12        12   \n",
+       "184366  Subscriber   Male      1916.0      6            4     8         8   \n",
+       "261289  Subscriber   Male      1918.0      6            4    14        14   \n",
+       "167741  Subscriber   Male      1934.0      6            4    16        16   \n",
+       "...            ...    ...         ...    ...          ...   ...       ...   \n",
+       "299188    Customer    NaN         NaN      6            4    15        15   \n",
+       "299552    Customer    NaN         NaN      6            4    17        18   \n",
+       "299600    Customer    NaN         NaN      6            4    11        11   \n",
+       "299700    Customer    NaN         NaN      6            4    14        15   \n",
+       "299947    Customer    NaN         NaN      6            4    22        22   \n",
+       "\n",
+       "        total  \n",
+       "44854       0  \n",
+       "267444      0  \n",
+       "184366      0  \n",
+       "261289      0  \n",
+       "167741      0  \n",
+       "...       ...  \n",
+       "299188      0  \n",
+       "299552      1  \n",
+       "299600      0  \n",
+       "299700      1  \n",
+       "299947      0  \n",
+       "\n",
+       "[10821 rows x 14 columns]"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.sort_values('Birth Year',ascending=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "8372425b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2001.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df['Birth Year'].iloc[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "da5ebfb7",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2001.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df['Birth Year'].max())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "837aa56f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Calculating The Most Frequent Times of Travel...\n",
+      "\n",
+      "Most common month is:  6\n",
+      "Most common day is:  4\n",
+      "Most common start hour:  17\n",
+      "\n",
+      "This took 0.09815573692321777 seconds.\n",
+      "----------------------------------------\n"
+     ]
+    }
+   ],
+   "source": [
+    "def time_stats(df):\n",
+    "    \"\"\"Displays statistics on the most frequent times of travel.\"\"\"\n",
+    "\n",
+    "    print('\\nCalculating The Most Frequent Times of Travel...\\n')\n",
+    "    start_time = time.time()\n",
+    "\n",
+    "    # display the most common month\n",
+    "    print(\"Most common month is: \",df['month'].mode()[0])\n",
+    "\n",
+    "    # display the most common day of week\n",
+    "    print(\"Most common day is: \",df[\"day of week\"].mode()[0])\n",
+    "\n",
+    "    # display the most common start hour\n",
+    "    df['hour']=df['Start Time'].dt.hour\n",
+    "    print(\"Most common start hour: \",df['hour'].mode()[0])\n",
+    "    \n",
+    "\n",
+    "    print(\"\\nThis took %s seconds.\" % (time.time() - start_time))\n",
+    "    print('-'*40)\n",
+    "time_stats(df)    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "85b6bb35",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
